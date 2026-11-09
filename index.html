@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f7ef" />
+    <script>
+      const preference = localStorage.getItem('a-minos-theme')
+      if (preference === 'light' || preference === 'dark') {
+        document.documentElement.dataset.theme = preference
+      }
+    </script>
     <meta
       name="description"
       content="A-Minos，一个为 Tetris 社区做点有趣东西的开源组织。玩家数据、中文支持、开发工具，把我们对方块的热爱，拼在一起。"

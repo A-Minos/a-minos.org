@@ -1,15 +1,23 @@
 :root {
   font-family: 'DM Sans Variable', 'Noto Sans SC Variable', sans-serif;
-  color: #282a25;
-  background: #f7f7ef;
+  color-scheme: light dark;
+  color: var(--ink);
+  background: var(--paper);
   font-synthesis: none;
   font-weight: 400;
-  --ink: #282a25;
-  --muted: #71736b;
-  --coral: #eb795f;
-  --line: #dedfd5;
+  --paper: light-dark(#f7f7ef, #1d211c);
+  --ink: light-dark(#282a25, #eeeee2);
+  --muted: light-dark(#71736b, #b0b5a5);
+  --coral: light-dark(#eb795f, #f3977d);
+  --line: light-dark(#dedfd5, #3b4436);
   scroll-behavior: smooth;
   scroll-padding-top: 30px;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
 }
 * {
   box-sizing: border-box;
@@ -23,6 +31,7 @@ a {
 }
 button {
   font: inherit;
+  color: inherit;
 }
 button,
 a {
@@ -45,13 +54,14 @@ canvas {
 }
 button:focus-visible,
 a:focus-visible,
-canvas:focus-visible {
+canvas:focus-visible,
+select:focus-visible {
   outline: 3px solid #a285cf;
   outline-offset: 5px;
 }
 ::selection {
   background: #eacb70;
-  color: var(--ink);
+  color: #282a25;
 }
 svg {
   display: inline-block;
@@ -77,7 +87,7 @@ button svg,
   top: -70px;
   z-index: 20;
   background: var(--ink);
-  color: white;
+  color: var(--paper);
   padding: 12px 20px;
 }
 .skip-link:focus {
@@ -88,6 +98,7 @@ button svg,
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 28px;
   border-bottom: 1px solid var(--line);
 }
 .brand {
@@ -110,6 +121,7 @@ button svg,
   display: flex;
   gap: 38px;
   align-items: center;
+  margin-left: auto;
   font-size: 13px;
   font-weight: 500;
 }
@@ -124,8 +136,41 @@ button svg,
   align-items: center;
   gap: 16px;
   padding: 11px 17px;
-  border: 1px solid #c7c9bd;
+  border: 1px solid var(--line);
   border-radius: 7px;
+}
+.theme-selector {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--muted);
+}
+.theme-selector svg {
+  position: absolute;
+  left: 11px;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+.theme-selector select {
+  font: inherit;
+  font-size: 11px;
+  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 12px 9px 12px 33px;
+  cursor: pointer;
+}
+.theme-selector option {
+  background: var(--paper);
+  color: var(--ink);
 }
 .hero {
   min-height: 700px;
@@ -154,7 +199,7 @@ button svg,
   height: 7px;
   display: inline-block;
   border-radius: 50%;
-  background: #71875e;
+  background: light-dark(#71875e, #a2b889);
   flex-shrink: 0;
 }
 .eyebrow-divider {
@@ -214,10 +259,10 @@ button svg,
 }
 .button-dark {
   background: var(--ink);
-  color: #fff;
+  color: var(--paper);
 }
 .button-dark:hover {
-  background: #464b3c;
+  background: light-dark(#464b3c, #d4ddc7);
   transform: translateY(-2px);
 }
 .button > span {
@@ -247,7 +292,7 @@ button svg,
   gap: 10px;
   align-items: center;
   margin-top: 52px;
-  color: #8a8c7d;
+  color: light-dark(#8a8c7d, #a9b19a);
   font-size: 10px;
   letter-spacing: 1px;
 }
@@ -278,17 +323,17 @@ button svg,
   content: '';
   position: absolute;
   inset: 16px 20px 40px 27px;
-  border: 1px solid #d7d8c9;
+  border: 1px solid var(--line);
   border-radius: 13px;
   transform: rotate(5deg);
-  background: #eeeee3;
+  background: light-dark(#eeeee3, #252d23);
 }
 .playground {
   position: relative;
   transform: rotate(-4deg);
   padding: 17px 20px 15px;
-  background: #f0f0e5;
-  border: 1px solid #d3d5c5;
+  background: light-dark(#f0f0e5, #2c3528);
+  border: 1px solid light-dark(#d3d5c5, #47513d);
   border-radius: 10px;
   box-shadow: 0 12px 30px #40452a0b;
   transition: transform 0.3s;
@@ -319,7 +364,7 @@ button svg,
   border: none;
   display: flex;
   padding: 3px;
-  color: #777d6a;
+  color: light-dark(#777d6a, #b5bea6);
 }
 .playground-top > button svg {
   width: 16px;
@@ -334,8 +379,8 @@ button svg,
   position: relative;
   border-radius: 4px;
   overflow: hidden;
-  border: 1px solid #dcded0;
-  background: #e7e9db;
+  border: 1px solid light-dark(#dcded0, #47513d);
+  background: light-dark(#e7e9db, #20271f);
 }
 #board {
   display: block;
@@ -354,7 +399,7 @@ button svg,
   font-size: 8px;
   font-weight: 600;
   letter-spacing: 1.6px;
-  color: #777e68;
+  color: light-dark(#777e68, #b5bea6);
 }
 .next-piece {
   display: grid;
@@ -387,12 +432,12 @@ button svg,
   letter-spacing: -0.4px;
 }
 .sidebar-note span {
-  color: #899672;
+  color: light-dark(#899672, #b2c597);
 }
 .sidebar-flower {
   width: 27px;
   height: 27px;
-  stroke: #7f8e68;
+  stroke: light-dark(#7f8e68, #a5b78b);
   stroke-width: 2;
   margin-top: 20px;
   margin-bottom: 7px;
@@ -411,10 +456,10 @@ button svg,
   display: flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #d1d4c4;
+  border: 1px solid light-dark(#d1d4c4, #536048);
   border-bottom-width: 3px;
   border-radius: 5px;
-  background: #f9f9f1;
+  background: light-dark(#f9f9f1, #35402e);
   height: 35px;
   min-width: 37px;
   font-size: 17px;
@@ -423,23 +468,23 @@ button svg,
     translate 0.15s;
 }
 .game-controls button:hover {
-  background: #e2e8d4;
+  background: light-dark(#e2e8d4, #46583b);
 }
 .game-controls button:active {
   translate: 0 2px;
   border-bottom-width: 1px;
 }
 .game-controls .drop-button {
-  background: #dce5cc;
+  background: light-dark(#dce5cc, #465b35);
   font-size: 11px;
   gap: 29px;
   padding-inline: 15px;
-  border-color: #bac7a5;
+  border-color: light-dark(#bac7a5, #698151);
 }
 .game-status {
   font-size: 9px;
   text-align: left;
-  color: #737b64;
+  color: light-dark(#737b64, #bac4aa);
   margin: 12px 0 0;
   min-height: 15px;
   line-height: 1.5;
@@ -453,7 +498,7 @@ button svg,
   align-items: center;
   justify-content: center;
   gap: 15px;
-  background: #f7f7eff0;
+  background: light-dark(#f7f7eff0, #20271ff0);
   text-align: center;
   padding: 20px;
 }
@@ -494,6 +539,7 @@ button svg,
   z-index: 2;
   background: #ed896f;
   border: 1px solid #d9765d;
+  color: #282a25;
   padding: 14px 18px 18px;
   transform: rotate(9deg);
   font-size: 13px;
@@ -522,7 +568,7 @@ button svg,
 .scene-caption {
   font-size: 10px;
   letter-spacing: 0.6px;
-  color: #858973;
+  color: light-dark(#858973, #a9b598);
   position: absolute;
   bottom: -12px;
   right: 74px;
@@ -534,8 +580,8 @@ button svg,
   vertical-align: middle;
 }
 .values-strip {
-  border-block: 1px solid #d9ddcc;
-  background: #edf0e4;
+  border-block: 1px solid var(--line);
+  background: light-dark(#edf0e4, #272f23);
   overflow: hidden;
 }
 .values-strip > .wrap {
@@ -553,7 +599,7 @@ button svg,
 }
 .values-strip .strip-star {
   font-size: 29px;
-  color: #8c9977;
+  color: light-dark(#8c9977, #a7b68f);
   font-weight: 400;
 }
 .values-strip span:nth-child(3) {
@@ -572,7 +618,7 @@ button svg,
 .section-index {
   font-size: 9px;
   letter-spacing: 1.6px;
-  color: #7c816e;
+  color: light-dark(#7c816e, #a7b298);
   margin: 0 0 13px;
 }
 .section-heading h2,
@@ -619,17 +665,17 @@ button svg,
   box-shadow: 0 10px 24px #292d1f0a;
 }
 .stats-card {
-  background: #e4ebdd;
-  border-color: #d6dfcc;
+  background: light-dark(#e4ebdd, #2b3827);
+  border-color: light-dark(#d6dfcc, #46533c);
 }
 .rumen-card {
-  background: #30372e;
+  background: light-dark(#30372e, #242e25);
   color: #f3f2e9;
-  border-color: #30372e;
+  border-color: light-dark(#30372e, #475740);
 }
 .chinese-card {
-  background: #eae4f0;
-  border-color: #ded5e6;
+  background: light-dark(#eae4f0, #37303f);
+  border-color: light-dark(#ded5e6, #53465f);
 }
 .card-topline {
   display: flex;
@@ -639,13 +685,13 @@ button svg,
 .project-category {
   font-size: 10px;
   letter-spacing: 0.7px;
-  color: #64705a;
+  color: light-dark(#64705a, #b5c6a3);
 }
 .rumen-card .project-category {
   color: #b6c1a9;
 }
 .chinese-card .project-category {
-  color: #7a6d87;
+  color: light-dark(#7a6d87, #c5b3d6);
 }
 .card-arrow {
   font-size: 24px;
@@ -707,12 +753,12 @@ button svg,
   left: 3%;
   bottom: 25px;
   transform: rotate(4deg);
-  background: #fcfcf6;
+  background: light-dark(#fcfcf6, #39472f);
   display: flex;
   align-items: center;
   gap: 7px;
   padding: 12px;
-  border: 1px solid #d6ddce;
+  border: 1px solid light-dark(#d6ddce, #647453);
   border-radius: 6px;
   box-shadow: 2px 4px 7px #39452b0a;
   font-size: 10px;
@@ -783,13 +829,13 @@ button svg,
   width: 91px;
   height: 91px;
   border-radius: 9px;
-  border: 1px solid #c7bbd4;
-  background: #f5f0f9;
-  box-shadow: 3px 4px 0 #d6cce1;
+  border: 1px solid light-dark(#c7bbd4, #776489);
+  background: light-dark(#f5f0f9, #4a3d57);
+  box-shadow: 3px 4px 0 light-dark(#d6cce1, #261f2f);
   transform: rotate(-11deg);
   font-size: 46px;
   font-weight: 500;
-  color: #9a87af;
+  color: light-dark(#9a87af, #d7c7e7);
   position: relative;
   z-index: 1;
   margin-right: -12px;
@@ -810,7 +856,7 @@ button svg,
   margin-top: 20px;
   font-size: 53px;
   font-weight: 600;
-  box-shadow: 3px 4px 0 #cfc4dc;
+  box-shadow: 3px 4px 0 light-dark(#cfc4dc, #261f2f);
 }
 .translation-spark {
   position: absolute;
@@ -832,13 +878,13 @@ button svg,
   font-size: 11px;
   line-height: 1.95;
   margin: 0;
-  color: #6c7564;
+  color: light-dark(#6c7564, #bdc9ae);
 }
 .rumen-card .card-content p {
   color: #b6bfad;
 }
 .chinese-card .card-content p {
-  color: #7d7189;
+  color: light-dark(#7d7189, #c8b8d7);
 }
 .card-tags {
   display: flex;
@@ -853,7 +899,7 @@ button svg,
   align-items: center;
   gap: 5px;
   font-size: 9px;
-  color: #68725e;
+  color: light-dark(#68725e, #b8c9a3);
 }
 .rumen-card .card-tags {
   border-color: #69775a66;
@@ -865,7 +911,7 @@ button svg,
   border-color: #bfb1cd66;
 }
 .chinese-card .card-tags > span {
-  color: #7a6d87;
+  color: light-dark(#7a6d87, #c5b3d6);
 }
 .language-dot {
   display: inline-block;
@@ -882,7 +928,7 @@ button svg,
 }
 .project-note {
   font-size: 10px;
-  color: #838777;
+  color: light-dark(#838777, #adb69c);
   margin: 25px 0 0;
   letter-spacing: 0.4px;
 }
@@ -892,7 +938,7 @@ button svg,
 }
 .about-section {
   border-block: 1px solid var(--line);
-  background: #f0f1e8;
+  background: light-dark(#f0f1e8, #252d22);
 }
 .about-inner {
   display: grid;
@@ -917,7 +963,7 @@ button svg,
   gap: 3px;
   transform: rotate(-12deg);
   z-index: 2;
-  filter: drop-shadow(5px 7px 0 #dddfc8);
+  filter: drop-shadow(5px 7px 0 light-dark(#dddfc8, #181e17));
 }
 .large-mino > i {
   background: #f1c84d;
@@ -986,7 +1032,7 @@ button svg,
   bottom: 13%;
   font-size: 9px;
   letter-spacing: 1.8px;
-  color: #8e957e;
+  color: light-dark(#8e957e, #a8b596);
   transform: rotate(-8deg);
 }
 .about-copy h2 {
@@ -996,7 +1042,7 @@ button svg,
 }
 .about-copy > p:not(.eyebrow) {
   font-size: 12px;
-  color: #767d6b;
+  color: light-dark(#767d6b, #b0bca1);
   line-height: 2.1;
   margin-block: 12px;
 }
@@ -1014,7 +1060,7 @@ button svg,
 .join-coordinates {
   font-size: 9px;
   letter-spacing: 1.5px;
-  color: #8a8e7e;
+  color: light-dark(#8a8e7e, #a8b497);
 }
 .join-content {
   display: flex;
@@ -1072,7 +1118,7 @@ button svg,
 }
 .footer-message {
   font-size: 9px;
-  color: #949787;
+  color: light-dark(#949787, #a7b196);
   letter-spacing: 0.5px;
 }
 .site-footer > div {
@@ -1080,7 +1126,7 @@ button svg,
   align-items: center;
   gap: 24px;
   font-size: 9px;
-  color: #7e8372;
+  color: light-dark(#7e8372, #aab59b);
 }
 .site-footer > div > a:hover {
   color: var(--coral);
@@ -1469,7 +1515,11 @@ button svg,
     width: calc(100% - 40px);
   }
   .site-header {
-    height: 79px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    height: auto;
+    padding-block: 17px 12px;
+    row-gap: 14px;
   }
   .brand {
     font-size: 23px;
@@ -1479,18 +1529,28 @@ button svg,
     height: 31px;
   }
   .site-header nav {
-    gap: 12px;
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin-left: 0;
+    gap: 24px;
     font-size: 10px;
   }
   .site-header nav .nav-github {
-    font-size: 0;
+    font-size: 10px;
     padding: 4px 2px;
     border: 0;
-    gap: 0;
+    gap: 6px;
   }
   .nav-github svg {
     width: 20px;
     height: 20px;
+  }
+  .theme-selector {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .theme-selector select {
+    padding-block: 9px;
   }
   .hero {
     grid-template-columns: 1fr;

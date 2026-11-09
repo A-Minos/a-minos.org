@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, useTemplateRef, watchEffect } from 'vue'
 import { COLUMNS, ROWS, colors, shapes, PlaygroundGame } from '../game/playground'
+import { isDark } from '../theme'
 
 const game = reactive(new PlaygroundGame())
 const board = useTemplateRef('board')
@@ -55,12 +56,15 @@ defineExpose({ focusBoard })
 watchEffect(() => {
   const ctx = board.value?.getContext('2d')
   if (!ctx) return
+  const palette = isDark.value
+    ? { background: '#20271f', grid: '#323d2e', ghost: '#91a57f' }
+    : { background: '#e8eadd', grid: '#dce0cf', ghost: '#a3aa8c' }
   const size = 32
   ctx.setTransform(2, 0, 0, 2, 0, 0)
   ctx.clearRect(0, 0, COLUMNS * size, ROWS * size)
-  ctx.fillStyle = '#e8eadd'
+  ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, COLUMNS * size, ROWS * size)
-  ctx.strokeStyle = '#dce0cf'
+  ctx.strokeStyle = palette.grid
   ctx.lineWidth = 0.6
   for (let x = 0; x <= COLUMNS; x++) {
     ctx.beginPath()
@@ -83,7 +87,7 @@ watchEffect(() => {
     context.fill()
     context.globalAlpha = 1
     if (ghost) {
-      context.strokeStyle = '#a3aa8c'
+      context.strokeStyle = palette.ghost
       context.lineWidth = 1
       context.setLineDash([3, 3])
       context.stroke()

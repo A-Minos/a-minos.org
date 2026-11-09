@@ -2,6 +2,7 @@
 import { useTemplateRef } from 'vue'
 import MinoPlayground from './components/MinoPlayground.vue'
 import ProjectsSection from './components/ProjectsSection.vue'
+import ThemeSelector from './components/ThemeSelector.vue'
 
 const playground = useTemplateRef('playground')
 </script>
@@ -25,6 +26,7 @@ const playground = useTemplateRef('playground')
         >GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg
       ></a>
     </nav>
+    <ThemeSelector />
   </header>
 
   <main id="main">

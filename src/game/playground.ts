@@ -1,6 +1,9 @@
 export type PieceKind = 'I' | 'J' | 'L' | 'O' | 'S' | 'T' | 'Z'
 export type Shape = (0 | 1)[][]
 export type Board = (PieceKind | null)[][]
+type Rotation = 0 | 1 | 2 | 3
+type KickTests = readonly (readonly [number, number])[]
+type KickTable = Record<-1 | 1, readonly [KickTests, KickTests, KickTests, KickTests]>
 
 export const COLUMNS = 10
 export const ROWS = 12
@@ -14,14 +17,21 @@ export const colors: Record<PieceKind, string> = {
   Z: '#e58c79',
 }
 export const shapes: Record<PieceKind, Shape> = {
-  I: [[1, 1, 1, 1]],
+  I: [
+    [0, 0, 0, 0],
+    [1, 1, 1, 1],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+  ],
   J: [
     [1, 0, 0],
     [1, 1, 1],
+    [0, 0, 0],
   ],
   L: [
     [0, 0, 1],
     [1, 1, 1],
+    [0, 0, 0],
   ],
   O: [
     [1, 1],
@@ -30,14 +40,145 @@ export const shapes: Record<PieceKind, Shape> = {
   S: [
     [0, 1, 1],
     [1, 1, 0],
+    [0, 0, 0],
   ],
   T: [
     [0, 1, 0],
     [1, 1, 1],
+    [0, 0, 0],
   ],
   Z: [
     [1, 1, 0],
     [0, 1, 1],
+    [0, 0, 0],
+  ],
+}
+
+// SRS 的状态依次为 0、R、2、L；表中 y 向上为正，盘面 y 向下为正。
+// https://tetris.wiki/Super_Rotation_System#Wall_Kicks
+const jlstzKicks: KickTable = {
+  1: [
+    [
+      [0, 0],
+      [-1, 0],
+      [-1, 1],
+      [0, -2],
+      [-1, -2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [1, -1],
+      [0, 2],
+      [1, 2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, -2],
+      [1, -2],
+    ],
+    [
+      [0, 0],
+      [-1, 0],
+      [-1, -1],
+      [0, 2],
+      [-1, 2],
+    ],
+  ],
+  '-1': [
+    [
+      [0, 0],
+      [1, 0],
+      [1, 1],
+      [0, -2],
+      [1, -2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [1, -1],
+      [0, 2],
+      [1, 2],
+    ],
+    [
+      [0, 0],
+      [-1, 0],
+      [-1, 1],
+      [0, -2],
+      [-1, -2],
+    ],
+    [
+      [0, 0],
+      [-1, 0],
+      [-1, -1],
+      [0, 2],
+      [-1, 2],
+    ],
+  ],
+}
+
+const iKicks: KickTable = {
+  1: [
+    [
+      [0, 0],
+      [-2, 0],
+      [1, 0],
+      [-2, -1],
+      [1, 2],
+    ],
+    [
+      [0, 0],
+      [-1, 0],
+      [2, 0],
+      [-1, 2],
+      [2, -1],
+    ],
+    [
+      [0, 0],
+      [2, 0],
+      [-1, 0],
+      [2, 1],
+      [-1, -2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [-2, 0],
+      [1, -2],
+      [-2, 1],
+    ],
+  ],
+  '-1': [
+    [
+      [0, 0],
+      [-1, 0],
+      [2, 0],
+      [-1, 2],
+      [2, -1],
+    ],
+    [
+      [0, 0],
+      [2, 0],
+      [-1, 0],
+      [2, 1],
+      [-1, -2],
+    ],
+    [
+      [0, 0],
+      [1, 0],
+      [-2, 0],
+      [1, -2],
+      [-2, 1],
+    ],
+    [
+      [0, 0],
+      [-2, 0],
+      [1, 0],
+      [-2, -1],
+      [1, 2],
+    ],
   ],
 }
 
@@ -45,6 +186,7 @@ export class PlaygroundGame {
   board: Board = []
   kind: PieceKind = 'O'
   shape: Shape = shapes.O
+  rotation: Rotation = 0
   next: PieceKind = 'T'
   x = 4
   y = 1
@@ -69,6 +211,7 @@ export class PlaygroundGame {
     )
     this.kind = 'O'
     this.shape = shapes.O.map((row) => [...row])
+    this.rotation = 0
     this.next = 'T'
     this.x = 4
     this.y = 1
@@ -95,15 +238,24 @@ export class PlaygroundGame {
     if (!this.over && this.fits(this.shape, this.x + direction, this.y)) this.x += direction
   }
 
-  rotate() {
+  rotate(direction: -1 | 1 = 1) {
     if (this.over) return
+    const rotation = ((this.rotation + direction + 4) % 4) as Rotation
     const rotated: Shape = this.shape[0].map((_, column) =>
-      this.shape.map((row) => row[column]).reverse(),
+      direction === 1
+        ? this.shape.map((row) => row[column]).reverse()
+        : this.shape.map((row) => row[row.length - 1 - column]),
     )
-    for (const offset of [0, -1, 1, -2, 2]) {
-      if (this.fits(rotated, this.x + offset, this.y)) {
+    const kicks: KickTests =
+      this.kind === 'O'
+        ? [[0, 0]]
+        : (this.kind === 'I' ? iKicks : jlstzKicks)[direction][this.rotation]
+    for (const [dx, dy] of kicks) {
+      if (this.fits(rotated, this.x + dx, this.y - dy)) {
         this.shape = rotated
-        this.x += offset
+        this.rotation = rotation
+        this.x += dx
+        this.y -= dy
         return
       }
     }
@@ -132,6 +284,7 @@ export class PlaygroundGame {
     this.lines += cleared
     this.kind = this.next
     this.shape = shapes[this.kind].map((row) => [...row])
+    this.rotation = 0
     this.x = Math.floor((COLUMNS - this.shape[0].length) / 2)
     this.y = 0
     if (!this.bag.length) {

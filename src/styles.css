@@ -1639,6 +1639,11 @@ button svg,
     height: 25px;
     margin-top: 17px;
   }
+  .game-controls {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
   .game-controls button {
     height: 36px;
     min-width: 34px;
@@ -1650,6 +1655,8 @@ button svg,
     font-size: 11px;
   }
   .direction-controls {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 6px;
   }
   .game-status {

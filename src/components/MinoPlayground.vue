@@ -5,23 +5,26 @@ import { isDark } from '../theme'
 
 const game = reactive(new PlaygroundGame())
 const board = useTemplateRef('board')
-const status = ref('不用赶时间，按空格，让第一块落下。')
+const status = ref('← → 移动 · Z / X 旋转 · 空格落下')
 const nextCells = computed(() =>
-  shapes[game.next].flatMap((row, y) => row.map((cell, x) => ({ cell, x, y }))),
+  shapes[game.next]
+    .filter((row) => row.includes(1))
+    .flatMap((row, y) => row.flatMap((cell, x) => (cell ? [{ x, y }] : []))),
 )
-type Action = 'left' | 'right' | 'rotate' | 'drop'
+type Action = 'left' | 'right' | 'clockwise' | 'counterclockwise' | 'drop'
 
 function act(action: Action) {
   if (action === 'left') game.move(-1)
   else if (action === 'right') game.move(1)
-  else if (action === 'rotate') game.rotate()
+  else if (action === 'clockwise') game.rotate()
+  else if (action === 'counterclockwise') game.rotate(-1)
   else {
     const cleared = game.drop()
     status.value = game.over
       ? `这局拼出了 ${game.lines} 行，按「再来一局」重新开始。`
       : cleared
         ? `漂亮！消除了 ${cleared} 行。下一块，交给你。`
-        : '稳稳落下。左右移动，↑ 旋转，空格落下。'
+        : '稳稳落下。Z 逆时针，X / ↑ 顺时针，空格落下。'
   }
 }
 
@@ -29,14 +32,16 @@ function onKeydown(event: KeyboardEvent) {
   const actions: Record<string, Action> = {
     ArrowLeft: 'left',
     ArrowRight: 'right',
-    ArrowUp: 'rotate',
+    ArrowUp: 'clockwise',
+    KeyX: 'clockwise',
+    KeyZ: 'counterclockwise',
     ArrowDown: 'drop',
-    ' ': 'drop',
+    Space: 'drop',
   }
-  const action = actions[event.key]
-  if (!action || (event.key === ' ' && event.target instanceof HTMLButtonElement)) return
+  const action = actions[event.code]
+  if (!action || (event.code === 'Space' && event.target instanceof HTMLButtonElement)) return
   event.preventDefault()
-  if (event.repeat && (action === 'drop' || action === 'rotate')) return
+  if (event.repeat && action !== 'left' && action !== 'right') return
   act(action)
 }
 
@@ -150,7 +155,7 @@ watchEffect(() => {
             width="640"
             height="768"
             tabindex="0"
-            aria-label="方块游乐场。左右方向键移动，上方向键旋转，空格落下。没有计时，慢慢来。"
+            aria-label="方块游乐场。左右方向键移动，Z 逆时针旋转，X 或上方向键顺时针旋转，空格落下。没有计时，慢慢来。"
             aria-describedby="game-status"
             >请使用下方按钮操作方块。</canvas
           >
@@ -169,7 +174,7 @@ watchEffect(() => {
                 :style="{
                   gridColumn: block.x + 1,
                   gridRow: block.y + 1,
-                  background: block.cell ? colors[game.next] : 'transparent',
+                  background: colors[game.next],
                 }"
               ></i>
             </div>
@@ -189,7 +194,22 @@ watchEffect(() => {
           <button type="button" aria-label="向左移动" :disabled="game.over" @click="act('left')">
             ←
           </button>
-          <button type="button" aria-label="旋转方块" :disabled="game.over" @click="act('rotate')">
+          <button
+            type="button"
+            aria-label="逆时针旋转"
+            title="逆时针旋转（Z）"
+            :disabled="game.over"
+            @click="act('counterclockwise')"
+          >
+            ↺
+          </button>
+          <button
+            type="button"
+            aria-label="顺时针旋转"
+            title="顺时针旋转（X / ↑）"
+            :disabled="game.over"
+            @click="act('clockwise')"
+          >
             ↻
           </button>
           <button type="button" aria-label="向右移动" :disabled="game.over" @click="act('right')">
